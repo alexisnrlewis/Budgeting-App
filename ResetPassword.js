@@ -1,26 +1,27 @@
 // ResetPassword.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
 export default function ResetPassword({ navigation }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(''); // ✅ message to show after email sent
+  const [errorMessage, setErrorMessage] = useState(''); // optional error message
 
-  const validateEmail = (e) => {
-    // Email regex
-    return /\S+@\S+\.\S+/.test(e);
-  };
+  const validateEmail = (e) => /\S+@\S+\.\S+/.test(e);
 
   const handleSendReset = async () => {
+    setSuccessMessage('');
+    setErrorMessage('');
+
     if (!validateEmail(email)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Replace URL with backend endpoint
       const res = await fetch('http://localhost:4000/request-password-reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -30,14 +31,14 @@ export default function ResetPassword({ navigation }) {
       const json = await res.json();
 
       if (res.ok) {
-        // navigate to confirmation screen (or show alert)
-        navigation.navigate('ResetConfirmation', { email });
+        // ✅ show green inline message
+        setSuccessMessage(`A password reset link has been sent to ${email}.`);
       } else {
-        Alert.alert('Error', json.message || 'Unable to send reset email.');
+        setErrorMessage(json.message || 'Unable to send reset email.');
       }
     } catch (err) {
       console.log(err);
-      Alert.alert('Network Error', 'Could not reach the server. Try again later.');
+      setErrorMessage('Network error. Could not reach the server.');
     } finally {
       setLoading(false);
     }
@@ -46,12 +47,14 @@ export default function ResetPassword({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reset Password</Text>
-      <Text style={styles.info}>Enter your account email and we’ll send a reset link.</Text>
+      <Text style={styles.info}>
+        Enter the email associated with your account and we’ll send you a reset link.
+      </Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email address"
-        placeholderTextColor="#666"
+        placeholder="Email:"
+        placeholderTextColor="#000000ff"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -59,11 +62,25 @@ export default function ResetPassword({ navigation }) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSendReset} disabled={loading}>
-        {loading ? <ActivityIndicator /> : <Text style={styles.buttonText}>SEND RESET LINK</Text>}
+        {loading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Send Link</Text>}
       </TouchableOpacity>
 
+      {/* ✅ Inline success message */}
+      {successMessage ? (
+        <View style={styles.successBox}>
+          <Text style={styles.successText}>{successMessage}</Text>
+        </View>
+      ) : null}
+
+      {/* ✅ Inline error message */}
+      {errorMessage ? (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      ) : null}
+
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.link}>Back to Login</Text>
+        <Text style={styles.link}>Back to LOGIN</Text>
       </TouchableOpacity>
     </View>
   );
@@ -71,10 +88,28 @@ export default function ResetPassword({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E8F5E9' },
-  title: { fontSize: 28, fontWeight: '700', color: '#2E7D32', marginBottom: 8 },
-  info: { textAlign: 'center', marginBottom: 20, color: '#2E7D32' },
-  input: { width: '85%', padding: 12, borderWidth: 1, borderColor: '#999', borderRadius: 8, backgroundColor: '#fff', marginBottom: 16 },
+  title: { fontSize: 25, color: '#2E7D32', marginBottom: 8 },
+  info: { textAlign: 'center', marginBottom: 20, color: '#2E7D32', fontSize: 20 },
+  input: { width: '85%', padding: 12, borderWidth: 2.5, borderColor: '#000000ff', borderRadius: 8, backgroundColor: '#fff', marginBottom: 16 },
   button: { width: '70%', padding: 14, borderRadius: 10, backgroundColor: '#43A047', alignItems: 'center', marginBottom: 12 },
-  buttonText: { color: '#fff', fontWeight: '700' },
-  link: { color: '#388E3C', marginTop: 8, textDecorationLine: 'underline' },
+  buttonText: { color: '#fff', fontWeight: '800' },
+  link: { color: '#388E3C', marginTop: 12, textDecorationLine: 'underline', fontSize: 22 },
+
+  successBox: {
+    width: '85%',
+    padding: 12,
+    backgroundColor: '#C8E6C9', // green
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  successText: { color: '#1B5E20', fontSize: 18, textAlign: 'center' },
+
+  errorBox: {
+    width: '85%',
+    padding: 12,
+    backgroundColor: '#FFCDD2', // red
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  errorText: { color: '#B71C1C', fontSize: 18, textAlign: 'center' },
 });

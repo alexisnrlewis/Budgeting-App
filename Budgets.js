@@ -1,98 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
 
-const categories = ['Groceries', 'Entertainment', 'Shopping', 'Dining', 'Transport'];
+const categories = ['Groceries', 'Entertainment', 'Dining', 'Shopping', 'Transport', 'Healthcare', 'Utilities', 'Subscriptions'];
 
-// Predetermined fixed monthly expenses
-const fixedExpenses = [
-  { category: 'Rent/Mortgage', amount: 800 },
-  { category: 'Gas', amount: 150 },
-  { category: 'Utilities', amount: 120 },
-];
-
-export default function Budgets({ income = 0, expenses = 0 }) {
+export default function Budgets({ income = 0 }) {
+  // State for each category's budget
   const [budgets, setBudgets] = useState(
-    categories.map(cat => ({ category: cat, amount: 0 }))
+    categories.map(cat => ({ category: cat, amount: '' }))
   );
-  const [advice, setAdvice] = useState([]);
 
+  // Update budget amount for a category
   const updateBudget = (index, value) => {
     const updated = [...budgets];
-    updated[index].amount = parseFloat(value) || 0;
+    updated[index].amount = value.replace(/[^0-9.]/g, ''); // allow only numbers and decimal
     setBudgets(updated);
   };
 
-  // Compute advice whenever budgets, income, or expenses change
-  useEffect(() => {
-    const newAdvice = [];
-
-    const totalBudgeted = budgets.reduce((sum, b) => sum + b.amount, 0) + fixedExpenses.reduce((sum, f) => sum + f.amount, 0);
-    const remaining = income - expenses;
-
-    budgets.forEach(b => {
-      if (b.amount > remaining * 0.4) { // arbitrary warning if budget > 40% of remaining
-        newAdvice.push(`Warning: Your budget for ${b.category} may be too high compared to your income.`);
-      }
-    });
-
-    if (totalBudgeted > income) {
-      newAdvice.push("Caution: Your total budgets plus fixed expenses exceed your monthly income!");
-    }
-
-    setAdvice(newAdvice);
-  }, [budgets, income, expenses]);
+  // Optional: total budget calculation
+  const totalBudget = budgets.reduce((sum, b) => sum + parseFloat(b.amount || 0), 0);
 
   return (
-    <View style={{ width: '100%', alignItems: 'center' }}>
-      <Text style={styles.title}>Monthly Budgets</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Set Your Monthly Budgets</Text>
 
-      {/* Fixed Expenses */}
-      <Text style={styles.sectionTitle}>Fixed Expenses</Text>
-      {fixedExpenses.map((f) => (
-        <View key={f.category} style={styles.budgetItem}>
-          <Text style={styles.category}>{f.category}</Text>
-          <Text style={styles.fixedAmount}>${f.amount.toFixed(2)}</Text>
-        </View>
-      ))}
-
-      {/* User Budget Categories */}
-      <Text style={styles.sectionTitle}>Variable Budgets</Text>
       <FlatList
         data={budgets}
         keyExtractor={(item) => item.category}
         renderItem={({ item, index }) => (
-          <View style={styles.budgetItem}>
+          <View style={styles.row}>
             <Text style={styles.category}>{item.category}</Text>
             <TextInput
               style={styles.input}
               keyboardType="numeric"
-              value={item.amount.toString()}
+              value={item.amount}
               onChangeText={(text) => updateBudget(index, text)}
-              placeholder="Enter budget"
+              placeholder="0"
             />
           </View>
         )}
       />
 
-      {/* Advice Section */}
-      {advice.length > 0 && (
-        <View style={styles.adviceBox}>
-          {advice.map((msg, idx) => (
-            <Text key={idx} style={styles.adviceText}>• {msg}</Text>
-          ))}
-        </View>
-      )}
+      <View style={styles.totalRow}>
+        <Text style={styles.totalText}>Total Budget:</Text>
+        <Text style={styles.totalAmount}>${totalBudget.toFixed(2)}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: 'bold', marginVertical: 10, color: '#2E7D32' },
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginTop: 15, marginBottom: 5, color: '#1B5E20' },
-  budgetItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5, backgroundColor: '#fff', padding: 12, borderRadius: 8, width: '85%' },
-  category: { fontSize: 16, color: '#2E7D32' },
-  input: { backgroundColor: '#E0F2F1', padding: 8, borderRadius: 8, width: 100, textAlign: 'center', fontSize: 16 },
-  fixedAmount: { fontSize: 16, fontWeight: '600', color: '#1B5E20' },
-  adviceBox: { marginTop: 15, backgroundColor: '#FFECB3', padding: 10, borderRadius: 8, width: '85%' },
-  adviceText: { color: '#BF360C', fontWeight: '600', marginVertical: 2 },
+  container: { flex: 1, padding: 20, backgroundColor: '#E8F5E9' },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#2E7D32', marginBottom: 15, textAlign: 'center' },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  category: { fontSize: 16, color: '#1B5E20' },
+  input: {
+    width: 100,
+    backgroundColor: '#E0F2F1',
+    borderRadius: 8,
+    padding: 6,
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  totalRow: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+    backgroundColor: '#C8E6C9',
+    borderRadius: 10,
+  },
+  totalText: { fontSize: 18, fontWeight: '600', color: '#1B5E20' },
+  totalAmount: { fontSize: 18, fontWeight: 'bold', color: '#2E7D32' },
 });

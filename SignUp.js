@@ -32,29 +32,29 @@ export default function SignUp({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.logo}>💰 Budget Buddy</Text>
-      <Text style={styles.title}>Create an Account</Text>
+      <Text style={styles.logo}>💰 Budget Buddy 💰</Text>
+      <Text style={styles.title}>Create Account</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="First Name"
-        placeholderTextColor="#666"
+        placeholder="First Name:"
+        placeholderTextColor="#000000ff"
         value={firstName}
         onChangeText={setFirstName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
-        placeholderTextColor="#666"
+        placeholder="Last Name:"
+        placeholderTextColor="#000000ff"
         value={lastName}
         onChangeText={setLastName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#666"
+        placeholder="Email:"
+        placeholderTextColor="#000000ff"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -63,8 +63,8 @@ export default function SignUp({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#666"
+        placeholder="Password:"
+        placeholderTextColor="#000000ff"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -72,8 +72,8 @@ export default function SignUp({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Confirm Password"
-        placeholderTextColor="#666"
+        placeholder="Confirm Password:"
+        placeholderTextColor="#000000ff"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
@@ -81,8 +81,8 @@ export default function SignUp({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Monthly Income (Optional)"
-        placeholderTextColor="#666"
+        placeholder="Monthly Income (Optional):"
+        placeholderTextColor="#000000ff"
         value={income}
         onChangeText={setIncome}
         keyboardType="numeric"
@@ -90,8 +90,8 @@ export default function SignUp({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Savings Goal (Optional)"
-        placeholderTextColor="#666"
+        placeholder="Monthly Savings Goal (Optional):"
+        placeholderTextColor="#000000ff"
         value={savingsGoal}
         onChangeText={setSavingsGoal}
         keyboardType="numeric"
@@ -102,7 +102,7 @@ export default function SignUp({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.link}>Already have an account? Login</Text>
+        <Text style={styles.link}>Already have an account? LOGIN</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -135,6 +135,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  buttonText: { color: '#ffffffff', fontSize: 18, fontWeight: '600' },
   link: { marginTop: 20, fontSize: 18, color: '#388E3C', textDecorationLine: 'underline' },
 });

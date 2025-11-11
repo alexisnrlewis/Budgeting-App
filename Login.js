@@ -64,18 +64,18 @@ export default function Login({ navigation }) {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>LOGIN</Text>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.link}>
-          Don't have an account? Click here to Create an Account
+          Don't have an account? Click here to CREATE AN ACCOUNT.
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
         <Text style={styles.link}>
-          Forgot Password? Click here to Reset your Password.
+          Forgot Password? Click here to RESET YOUR PASSWORD.
         </Text>
       </TouchableOpacity>
     </View>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    color: '#000',
+    color: '#ffffffff',
     fontSize: 18,
     fontWeight: '600',
   },

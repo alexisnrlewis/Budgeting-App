@@ -1,3 +1,4 @@
+// Reports.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -6,14 +7,12 @@ const screenWidth = Dimensions.get('window').width;
 
 const months2025 = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
 ];
 
-// Fake sample data
-const fakeIncomeData = [3000, 3200, 3100, 2800, 3500, 3300, 3000, 3400, 3200, 3600, 3100, 3300];
-const fakeExpenseData = [2500, 3000, 2800, 2900, 3400, 3200, 3100, 3300, 3250, 3500, 3000, 3100];
+const fakeIncomeData = [3000, 3200, 3100, 2800, 3500, 3300, 3000, 3400, 3200, 3600, 3100];
+const fakeExpenseData = [2500, 3000, 2800, 2900, 3400, 3200, 3100, 3300, 3250, 3500, 3000];
 
-// Generate advice based on income vs expenses
 const getAdvice = (income, expenses) => {
   const savings = income - expenses;
   if (savings > income * 0.2) {
@@ -48,14 +47,14 @@ export default function Reports() {
         data={{
           labels: months2025,
           datasets: [
-            { data: monthlyData.map(m => m.income), color: () => '#2E7D32', strokeWidth: 2, label: 'Income' },
-            { data: monthlyData.map(m => m.expenses), color: () => '#E53935', strokeWidth: 2, label: 'Expenses' },
-            { data: monthlyData.map(m => m.savings), color: () => '#43A047', strokeWidth: 2, label: 'Savings' },
+            { data: monthlyData.map(m => m.income), color: () => '#2E7D32', strokeWidth: 3, label: 'Income' },
+            { data: monthlyData.map(m => m.expenses), color: () => '#E53935', strokeWidth: 3, label: 'Expenses' },
+            { data: monthlyData.map(m => m.savings), color: () => '#43A047', strokeWidth: 3, label: 'Savings' },
           ],
           legend: ['Income', 'Expenses', 'Savings'],
         }}
         width={screenWidth - 20}
-        height={250}
+        height={300} // slightly taller for readability
         yAxisLabel="$"
         chartConfig={{
           backgroundColor: '#C8E6C9',
@@ -65,21 +64,20 @@ export default function Reports() {
           color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           style: { borderRadius: 16 },
-          propsForDots: { r: '5', strokeWidth: '2', stroke: '#1B5E20' },
+          propsForDots: { r: '7', strokeWidth: '3', stroke: '#1B5E20' }, // bigger dots
         }}
-        style={{ marginVertical: 10, borderRadius: 16 }}
+        style={{ marginVertical: 12, borderRadius: 16 }}
         fromZero
         bezier
         onDataPointClick={(data) => setSelectedMonth(monthlyData[data.index])}
       />
 
-      {/* Show details only when user taps a month */}
       {selectedMonth && (
         <View style={styles.detailsBox}>
           <Text style={styles.detailsTitle}>{selectedMonth.month} 2025</Text>
-          <Text>Total Income: ${selectedMonth.income}</Text>
-          <Text>Total Expenses: ${selectedMonth.expenses}</Text>
-          <Text>Savings: ${selectedMonth.savings}</Text>
+          <Text style={styles.detailText}>Total Income: ${selectedMonth.income}</Text>
+          <Text style={styles.detailText}>Total Expenses: ${selectedMonth.expenses}</Text>
+          <Text style={styles.detailText}>Savings: ${selectedMonth.savings}</Text>
           {selectedMonth.advice.good !== '' && (
             <Text style={styles.goodFeedback}>Good: {selectedMonth.advice.good}</Text>
           )}
@@ -100,28 +98,29 @@ export default function Reports() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: '#E8F5E9' },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#2E7D32', textAlign: 'center', marginVertical: 10 },
+  container: { flex: 1, padding: 12, backgroundColor: '#E8F5E9' },
+  title: { fontSize: 30, fontWeight: '700', color: '#2E7D32', textAlign: 'center', marginVertical: 12 },
   detailsBox: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
-    marginVertical: 10,
+    borderRadius: 14,
+    padding: 18,
+    marginVertical: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 4,
   },
-  detailsTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 5, color: '#1B5E20' },
-  goodFeedback: { color: 'green', fontWeight: '600', marginTop: 5 },
-  improveFeedback: { color: 'red', fontWeight: '600', marginTop: 5 },
+  detailsTitle: { fontSize: 20, fontWeight: '700', marginBottom: 8, color: '#1B5E20' },
+  detailText: { fontSize: 20, marginBottom: 4, color: '#2E7D32' },
+  goodFeedback: { color: 'green', fontWeight: '600', marginTop: 6, fontSize: 18 },
+  improveFeedback: { color: 'red', fontWeight: '600', marginTop: 6, fontSize: 18 },
   closeButton: {
-    marginTop: 10,
+    marginTop: 12,
     backgroundColor: '#43A047',
-    padding: 10,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 10,
     alignSelf: 'center',
   },
-  closeText: { color: '#000', fontWeight: '600' },
+  closeText: { color: '#ffffffff', fontWeight: '600', fontSize: 18 },
 });

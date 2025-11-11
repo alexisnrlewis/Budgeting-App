@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 
 // Predetermined fixed expenses
-const fixedExpenses = [
+const initialFixedExpenses = [
   { id: 'f1', title: 'Rent/Mortgage', amount: 800 },
   { id: 'f2', title: 'Gas', amount: 150 },
   { id: 'f3', title: 'Utilities', amount: 120 },
 ];
 
 export default function Expenses({ onTotalChange }) {
+  const [fixedExpenses, setFixedExpenses] = useState(initialFixedExpenses);
   const [expenses, setExpenses] = useState([]);
+  const [editFixedId, setEditFixedId] = useState(null);
+  const [tempFixedTitle, setTempFixedTitle] = useState('');
+  const [tempFixedAmount, setTempFixedAmount] = useState('');
+  
   const [newTitle, setNewTitle] = useState('');
   const [newAmount, setNewAmount] = useState('');
   const [newDate, setNewDate] = useState('');
@@ -20,10 +25,10 @@ export default function Expenses({ onTotalChange }) {
 
   // Update total spending whenever fixed + variable expenses change
   useEffect(() => {
-    const total = fixedExpenses.reduce((sum, exp) => sum + exp.amount, 0) +
-      expenses.reduce((sum, exp) => sum + exp.amount, 0);
-    onTotalChange(total);
-  }, [expenses]);
+    const totalFixed = fixedExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalVariable = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    onTotalChange(totalFixed + totalVariable);
+  }, [fixedExpenses, expenses]);
 
   const addExpense = () => {
     if (!newTitle || !newAmount || !newDate) {
@@ -45,6 +50,26 @@ export default function Expenses({ onTotalChange }) {
     setNewTitle('');
     setNewAmount('');
     setNewDate('');
+  };
+
+  const startEditFixed = (item) => {
+    setEditFixedId(item.id);
+    setTempFixedTitle(item.title);
+    setTempFixedAmount(item.amount.toString());
+  };
+
+  const saveEditFixed = () => {
+    const amount = parseFloat(tempFixedAmount);
+    if (isNaN(amount) || amount < 0) {
+      Alert.alert('Error', 'Amount must be a positive number.');
+      return;
+    }
+    setFixedExpenses(
+      fixedExpenses.map(exp => exp.id === editFixedId ? { ...exp, title: tempFixedTitle, amount } : exp)
+    );
+    setEditFixedId(null);
+    setTempFixedTitle('');
+    setTempFixedAmount('');
   };
 
   const startEdit = (item) => {
@@ -101,7 +126,19 @@ export default function Expenses({ onTotalChange }) {
       <Text style={styles.sectionTitle}>Fixed Expenses</Text>
       {fixedExpenses.map((exp) => (
         <View key={exp.id} style={[styles.expenseItem, { backgroundColor: '#E0F2F1' }]}>
-          <Text style={styles.expenseTitle}>{exp.title} - ${exp.amount.toFixed(2)}</Text>
+          {editFixedId === exp.id ? (
+            <>
+              <TextInput style={styles.inputSmall} value={tempFixedTitle} onChangeText={setTempFixedTitle} />
+              <TextInput style={styles.inputSmall} value={tempFixedAmount} keyboardType="numeric" onChangeText={setTempFixedAmount} />
+              <TouchableOpacity style={styles.saveButton} onPress={saveEditFixed}><Text style={styles.saveText}>Save</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.deleteButton} onPress={() => setEditFixedId(null)}><Text style={styles.deleteText}>Cancel</Text></TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.expenseTitle}>{exp.title} - ${exp.amount.toFixed(2)}</Text>
+              <TouchableOpacity style={styles.editButton} onPress={() => startEditFixed(exp)}><Text style={styles.editText}>Edit</Text></TouchableOpacity>
+            </>
+          )}
         </View>
       ))}
 
@@ -127,9 +164,9 @@ export default function Expenses({ onTotalChange }) {
 const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', color: '#2E7D32', marginVertical: 10 },
   sectionTitle: { fontSize: 18, fontWeight: '600', color: '#1B5E20', marginTop: 10, marginBottom: 5 },
-  expenseItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5, backgroundColor: '#fff', padding: 10, borderRadius: 8, width: '85%' },
+  expenseItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5, backgroundColor: '#fff', padding: 10, borderRadius: 8, width: '100%' },
   expenseTitle: { fontSize: 16, flex: 1 },
-  input: { backgroundColor: '#fff', padding: 10, borderRadius: 8, marginVertical: 5, width: '85%' },
+  input: { backgroundColor: '#fff', padding: 10, borderRadius: 8, marginVertical: 5, width: '100%' },
   inputSmall: { backgroundColor: '#E0F2F1', padding: 6, borderRadius: 6, marginRight: 5, width: 80, textAlign: 'center' },
   addButton: { backgroundColor: '#43A047', padding: 12, borderRadius: 12, marginTop: 10, alignItems: 'center', width: '85%' },
   addButtonText: { color: '#fff', fontWeight: '600' },

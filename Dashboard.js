@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import Expenses from './Expenses';
 import Budgets from './Budgets';
 import Reports from './Reports';
+import Challenges from './Challenges'; // ✅ Correct import
 
 export default function Dashboard({ navigation }) {
   const [income, setIncome] = useState(0);
@@ -16,6 +17,13 @@ export default function Dashboard({ navigation }) {
     password: 'pass123',
   });
 
+  // ✅ Fixed budgets state
+  const [fixedBudgets, setFixedBudgets] = useState({
+    rentMortgage: 1200,
+    gas: 150,
+    utilities: 200,
+  });
+
   const remainingBudget = income - spending;
 
   return (
@@ -23,9 +31,13 @@ export default function Dashboard({ navigation }) {
       {/* Account Settings Button */}
       <TouchableOpacity
         style={styles.settingsButton}
-        onPress={() => navigation.navigate('AccountSettings', { user })}
+        onPress={() => navigation.navigate('AccountSettings', { 
+          user,
+          fixedBudgets,
+          setFixedBudgets
+        })}
       >
-        <Text style={styles.settingsText}>⚙️</Text>
+        <Text style={styles.settingsText}>Settings</Text>
       </TouchableOpacity>
 
       {/* Logout Button */}
@@ -45,12 +57,13 @@ export default function Dashboard({ navigation }) {
           Budgets: 'Set monthly budgets and get advice on spending.',
           Expenses: 'Add, edit, or delete your expenses.',
           Reports: 'View your monthly reports with graphs and tips.',
+          Challenges: 'Join savings challenges and improve your finances!',
         }[activeTab]}
       </Text>
 
       {/* Tabs */}
       <View style={styles.tabBar}>
-        {['Dashboard', 'Budgets', 'Expenses', 'Reports'].map((tab) => (
+        {['Dashboard', 'Budgets', 'Expenses', 'Reports', 'Challenges'].map((tab) => (
           <TouchableOpacity
             key={tab}
             style={[styles.tabButton, activeTab === tab && styles.activeTab]}
@@ -105,6 +118,7 @@ export default function Dashboard({ navigation }) {
         {activeTab === 'Budgets' && <Budgets />}
         {activeTab === 'Expenses' && <Expenses onTotalChange={setSpending} />}
         {activeTab === 'Reports' && <Reports />}
+        {activeTab === 'Challenges' && <Challenges />}
       </ScrollView>
     </View>
   );

@@ -9,6 +9,7 @@ import ResetPassword from './ResetPassword';
 import Expenses from './Expenses';
 import Reports from './Reports';
 import AccountSettings from './AccountSettings';
+import Challenges from './Challenges';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ export default function App() {
         <Stack.Screen name="Expenses" component={Expenses} />
         <Stack.Screen name="Reports" component={Reports} />
         <Stack.Screen name="AccountSettings" component={AccountSettings} />
+        <Stack.Screen name="Challenges" component={Challenges} />
       </Stack.Navigator>
     </NavigationContainer>
   );
